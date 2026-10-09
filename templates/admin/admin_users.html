@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - Smart Garment Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h1 class="brand-font mb-0"><i class="fa-solid fa-users text-accent me-2"></i>Manage Users</h1>
+        <div class="text-muted">Total Registered Accounts: <strong>{{ users|length }}</strong></div>
+    </div>
+    
+    <div class="card border-0 shadow-sm p-4 rounded-0">
+        <div class="table-responsive">
+            <table class="table align-middle table-hover">
+                <thead>
+                    <tr class="small text-muted text-uppercase">
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Email Address</th>
+                        <th>Phone Number</th>
+                        <th>Role Privileges</th>
+                        <th>Created At</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>#{{ user.id }}</td>
+                            <td><strong class="text-dark">{{ user.name }}</strong></td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.phone }}</td>
+                            <td>
+                                {% if user.role == 'admin' %}
+                                    <span class="badge bg-danger rounded-0"><i class="fa-solid fa-user-shield me-1"></i>Administrator</span>
+                                {% else %}
+                                    <span class="badge bg-secondary text-dark rounded-0">Customer</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at else '' }}</td>
+                            <td class="text-center">
+                                <!-- Prevent deleting self -->
+                                {% if session.get('admin_id') and session.get('admin_id') == user.id %}
+                                    <span class="text-muted small italic">Logged In</span>
+                                {% else %}
+                                    <form action="{{ url_for('admin_delete_user', id=user.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this user? All their orders and history will be lost.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-0" title="Delete User Account"><i class="fa-regular fa-trash-can"></i> Delete</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">No user accounts found in database.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

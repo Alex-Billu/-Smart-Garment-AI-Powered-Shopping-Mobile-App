@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Orders - Smart Garment Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h1 class="brand-font mb-0"><i class="fa-solid fa-truck-ramp-box text-accent me-2"></i>Manage Orders</h1>
+        <div class="text-muted">Total Orders Placed: <strong>{{ orders|length }}</strong></div>
+    </div>
+    
+    <div class="card border-0 shadow-sm p-4 rounded-0">
+        <div class="table-responsive">
+            <table class="table align-middle table-hover">
+                <thead>
+                    <tr class="small text-muted text-uppercase">
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Date Placed</th>
+                        <th>Address Details</th>
+                        <th>Payment</th>
+                        <th>Total Amount</th>
+                        <th>Current Status</th>
+                        <th>Update Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td><strong>#{{ order.id }}</strong></td>
+                            <td>
+                                <div class="fw-bold">{{ order.customer_name }}</div>
+                                <small class="text-muted">{{ order.customer_email }}</small>
+                            </td>
+                            <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') if order.created_at else '' }}</td>
+                            <td>
+                                <div class="small">{{ order.name }}</div>
+                                <small class="text-muted">{{ order.address }}, {{ order.city }} - {{ order.pincode }}</small>
+                            </td>
+                            <td><small class="fw-semibold">{{ order.payment_method }}</small></td>
+                            <td class="fw-bold">₹{{ "%.2f"|format(order.total_amount) }}</td>
+                            <td>
+                                {% if order.status == 'Pending' %}
+                                    <span class="badge bg-warning text-dark rounded-0">Pending</span>
+                                {% elif order.status == 'Confirmed' %}
+                                    <span class="badge bg-info text-dark rounded-0">Confirmed</span>
+                                {% elif order.status == 'Shipped' %}
+                                    <span class="badge bg-primary rounded-0">Shipped</span>
+                                {% elif order.status == 'Delivered' %}
+                                    <span class="badge bg-success rounded-0">Delivered</span>
+                                {% else %}
+                                    <span class="badge bg-danger rounded-0">Cancelled</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form action="{{ url_for('admin_update_order_status', id=order.id) }}" method="POST" class="d-inline-flex g-2">
+                                    <select name="status" class="form-select form-select-sm rounded-0 border-dark me-2" style="width: 120px;">
+                                        {% for st in ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled'] %}
+                                            <option value="{{ st }}" {% if order.status == st %}selected{% endif %}>{{ st }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-luxury btn-sm rounded-0 py-1 px-2">Update</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">No customer orders have been placed yet.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

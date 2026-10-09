@@ -1,0 +1,103 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Smart Garment Mobile API",
+    "description": "Production-ready REST API for Smart Garment cross-platform mobile app",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:5000/api/v1",
+      "description": "Local Development Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Register new user account",
+        "responses": { "201": { "description": "User created" } }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "User login and token issuance",
+        "responses": { "200": { "description": "Login successful" } }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "summary": "Rotate refresh token and get new access token",
+        "responses": { "200": { "description": "Token refreshed" } }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Revoke refresh token",
+        "responses": { "200": { "description": "Logged out" } }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Get authenticated user profile",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Profile details" } }
+      }
+    },
+    "/products": {
+      "get": {
+        "summary": "List products with search, pagination and filtering",
+        "responses": { "200": { "description": "Paginated products list" } }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "summary": "Get product details with rating and reviews",
+        "responses": { "200": { "description": "Product details" } }
+      }
+    },
+    "/cart": {
+      "get": {
+        "summary": "Get user shopping cart",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Cart items" } }
+      }
+    },
+    "/cart/add": {
+      "post": {
+        "summary": "Add item to cart",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "201": { "description": "Item added" } }
+      }
+    },
+    "/orders/checkout": {
+      "post": {
+        "summary": "Place order from cart",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "201": { "description": "Order placed" } }
+      }
+    },
+    "/size/predict": {
+      "post": {
+        "summary": "AI size predictor and BMI calculation",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Predicted size and confidence" } }
+      }
+    },
+    "/admin/dashboard": {
+      "get": {
+        "summary": "Get administrative metrics and analytics",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Dashboard analytics" } }
+      }
+    }
+  }
+}

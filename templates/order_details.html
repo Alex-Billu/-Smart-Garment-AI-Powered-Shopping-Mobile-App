@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Order Details - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="brand-font mb-0"><i class="fa-solid fa-file-invoice text-accent me-2"></i>Order Details #{{ order.id }}</h1>
+        <a href="{{ url_for('orders') }}" class="btn btn-luxury-outline btn-sm rounded-0"><i class="fa-solid fa-arrow-left me-1"></i> Back to Orders</a>
+    </div>
+    
+    <div class="row g-4">
+        <!-- Order details & Items -->
+        <div class="col-lg-8">
+            <!-- Order status tracking -->
+            <div class="card border-0 shadow-sm p-4 rounded-0 mb-4">
+                <h5 class="fw-bold mb-4">Order Progress</h5>
+                
+                <div class="row text-center position-relative g-0">
+                    {% set statuses = ['Pending', 'Confirmed', 'Shipped', 'Delivered'] %}
+                    {% set current_idx = statuses.index(order.status) if order.status in statuses else -1 %}
+                    
+                    {% if order.status == 'Cancelled' %}
+                        <div class="alert alert-danger rounded-0 border-0 mb-0 w-100">
+                            <i class="fa-solid fa-circle-xmark me-2"></i> This order has been <strong>Cancelled</strong>.
+                        </div>
+                    {% else %}
+                        <!-- Progress bar line -->
+                        <div class="position-absolute top-50 start-50 translate-middle-y bg-secondary" style="height: 4px; width: 80%; left: 10%; z-index: 1;"></div>
+                        <div class="position-absolute top-50 start-50 translate-middle-y bg-success" style="height: 4px; width: {{ 0 if current_idx == 0 else (26 * current_idx) }}%; left: 10%; z-index: 2; transition: width 0.4s ease;"></div>
+                        
+                        {% for st in statuses %}
+                            {% set is_done = loop.index0 <= current_idx %}
+                            {% set is_active = loop.index0 == current_idx %}
+                            <div class="col-3 position-relative" style="z-index: 3;">
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center border-3 fw-bold
+                                     {% if is_active %}bg-warning border-warning text-dark{% elif is_done %}bg-success border-success text-white{% else %}bg-white border-secondary text-muted{% endif %}" 
+                                     style="width: 40px; height: 40px;">
+                                    {% if is_done and not is_active %}
+                                        <i class="fa-solid fa-check"></i>
+                                    {% else %}
+                                        {{ loop.index }}
+                                    {% endif %}
+                                </div>
+                                <div class="small fw-semibold mt-2 {% if is_done %}text-dark{% else %}text-muted{% endif %}">{{ st }}</div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Items table -->
+            <div class="card border-0 shadow-sm p-4 rounded-0">
+                <h5 class="fw-bold mb-4">Garments Ordered</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr class="small text-muted text-uppercase">
+                                <th>Product</th>
+                                <th class="text-center">Size</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-end">Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <!-- Since we don't have separate product image query, display product link -->
+                                            <div>
+                                                <h6 class="mb-0 fw-bold">
+                                                    {% if item.product_id %}
+                                                        <a href="{{ url_for('product_details', id=item.product_id) }}" class="text-dark text-decoration-none">{{ item.product_name }}</a>
+                                                    {% else %}
+                                                        {{ item.product_name }}
+                                                    {% endif %}
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center"><span class="badge bg-dark rounded-0">{{ item.size }}</span></td>
+                                    <td class="text-center">{{ item.quantity }}</td>
+                                    <td class="text-end">₹{{ "%.2f"|format(item.price) }}</td>
+                                    <td class="text-end fw-bold">₹{{ "%.2f"|format(item.price * item.quantity) }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary & Shipping sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4 rounded-0 mb-4" style="border-top: 3px solid var(--accent-color) !important;">
+                <h5 class="fw-bold mb-4">Order Summary</h5>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Subtotal</span>
+                    <span class="fw-bold">₹{{ "%.2f"|format(order.total_amount) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Delivery Charges</span>
+                    <span class="text-success fw-bold">FREE</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="fw-bold text-dark">Grand Total</span>
+                    <span class="fw-bold text-dark">₹{{ "%.2f"|format(order.total_amount) }}</span>
+                </div>
+                <div class="small text-muted mb-1">Payment Method: <strong>{{ order.payment_method }}</strong></div>
+                <div class="small text-muted">Order Date: <strong>{{ order.created_at.strftime('%Y-%m-%d %H:%M') if order.created_at else '' }}</strong></div>
+            </div>
+            
+            <div class="card border-0 shadow-sm p-4 rounded-0">
+                <h5 class="fw-bold mb-3">Shipping Address</h5>
+                <p class="text-muted small mb-0">
+                    <strong>{{ order.name }}</strong><br>
+                    {{ order.address }},<br>
+                    {{ order.city }}, {{ order.state }} - {{ order.pincode }}<br>
+                    <strong>Phone:</strong> {{ order.phone }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

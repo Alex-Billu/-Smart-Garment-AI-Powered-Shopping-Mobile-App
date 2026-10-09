@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <h1 class="brand-font mb-4"><i class="fa-regular fa-user text-accent me-2"></i>My Profile</h1>
+    
+    <div class="row g-4">
+        <!-- Account Settings Form -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm p-4 rounded-0" style="border-top: 3px solid var(--primary-color) !important;">
+                <h4 class="mb-4">Account Information</h4>
+                
+                <form action="{{ url_for('profile') }}" method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control rounded-0" id="name" name="name" required value="{{ user.name }}">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control rounded-0" id="email" name="email" required value="{{ user.email }}">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control rounded-0" id="phone" name="phone" required value="{{ user.phone }}" pattern="[0-9]{10,15}">
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control rounded-0" id="address" name="address" rows="3" placeholder="Street address...">{{ user_details.address if user_details else '' }}</textarea>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control rounded-0" id="city" name="city" value="{{ user_details.city if user_details else '' }}" placeholder="City">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" class="form-control rounded-0" id="state" name="state" value="{{ user_details.state if user_details else '' }}" placeholder="State">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="pincode" class="form-label">Pincode</label>
+                            <input type="text" class="form-control rounded-0" id="pincode" name="pincode" value="{{ user_details.pincode if user_details else '' }}" placeholder="Pincode" pattern="[0-9]{6}">
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-luxury py-2.5">Update Profile Information</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Last AI Size Prediction Card -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm p-4 rounded-0" style="border-top: 3px solid var(--accent-color) !important;">
+                <h4 class="mb-4"><i class="fa-solid fa-microchip text-accent me-2"></i>Last AI Prediction</h4>
+                
+                {% if last_prediction %}
+                    <div class="text-center py-4 bg-light mb-4">
+                        <span class="text-uppercase text-muted d-block font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">Recommended Size</span>
+                        <div class="predicted-size-display my-2" style="font-size: 5rem; padding: 5px 20px;">{{ last_prediction.predicted_size }}</div>
+                        <p class="mb-0 text-muted">Confidence Score: <strong>{{ "%.1f"|format(last_prediction.confidence) }}%</strong></p>
+                    </div>
+                    
+                    <h6 class="fw-bold mb-3 border-bottom pb-1">Measurements Entered</h6>
+                    <div class="row g-3 small text-muted mb-4">
+                        <div class="col-6">Height: <strong class="text-dark">{{ last_prediction.height }} cm</strong></div>
+                        <div class="col-6">Weight: <strong class="text-dark">{{ last_prediction.weight }} kg</strong></div>
+                        <div class="col-6">Chest: <strong class="text-dark">{{ last_prediction.chest }} cm</strong></div>
+                        <div class="col-6">Waist: <strong class="text-dark">{{ last_prediction.waist }} cm</strong></div>
+                        <div class="col-6">Fit Preference: <strong class="text-dark">{{ last_prediction.fit_preference }}</strong></div>
+                        <div class="col-6">Calculated BMI: <strong class="text-dark">{{ "%.1f"|format(last_prediction.bmi) }}</strong></div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('prediction_result') }}" class="btn btn-luxury-outline btn-sm rounded-0"><i class="fa-solid fa-circle-info me-2"></i>View Full Result Analysis</a>
+                        <a href="{{ url_for('size_finder') }}" class="btn btn-luxury btn-sm rounded-0"><i class="fa-solid fa-calculator me-2"></i>Find Size Again</a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fa-solid fa-ruler-combined text-muted mb-3" style="font-size: 3.5rem;"></i>
+                        <h5>No AI Size Profile Yet</h5>
+                        <p class="text-muted small px-3">You haven't run our AI recommendation model yet. Enter your physical coordinates to find your size.</p>
+                        <a href="{{ url_for('size_finder') }}" class="btn btn-luxury-outline rounded-0 btn-sm">Find My Size</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

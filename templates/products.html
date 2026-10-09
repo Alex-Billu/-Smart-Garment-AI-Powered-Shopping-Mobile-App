@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Shop Garments - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 col-md-4 mb-4">
+            <div class="card border-0 shadow-sm p-4 rounded-0" style="border-top: 3px solid var(--primary-color) !important;">
+                <h4 class="mb-4"><i class="fa-solid fa-filter me-2 text-accent"></i>Filters</h4>
+                
+                <form action="{{ url_for('shop') }}" method="GET" id="filter-form">
+                    <!-- Search Input -->
+                    <div class="mb-4">
+                        <label for="search" class="form-label fw-semibold">Search Products</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control rounded-0" id="search" name="search" placeholder="Search..." value="{{ filters.search }}">
+                            <button class="btn btn-dark rounded-0" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        </div>
+                    </div>
+                    
+                    <!-- Category Select -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Category</label>
+                        <select class="form-select rounded-0" name="category" onchange="this.form.submit()">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat }}" {% if filters.category == cat %}selected{% endif %}>{{ cat }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Size Select -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Size</label>
+                        <select class="form-select rounded-0" name="size" onchange="this.form.submit()">
+                            <option value="">All Sizes</option>
+                            <option value="S" {% if filters.size == 'S' %}selected{% endif %}>S (Small)</option>
+                            <option value="M" {% if filters.size == 'M' %}selected{% endif %}>M (Medium)</option>
+                            <option value="L" {% if filters.size == 'L' %}selected{% endif %}>L (Large)</option>
+                            <option value="XL" {% if filters.size == 'XL' %}selected{% endif %}>XL (X-Large)</option>
+                            <option value="XXL" {% if filters.size == 'XXL' %}selected{% endif %}>XXL (XX-Large)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Price Range -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Price Range (₹)</label>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <input type="number" class="form-control rounded-0 form-control-sm" name="min_price" placeholder="Min" value="{{ filters.min_price }}" min="0">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control rounded-0 form-control-sm" name="max_price" placeholder="Max" value="{{ filters.max_price }}" min="0">
+                            </div>
+                        </div>
+                        <button class="btn btn-luxury-outline w-100 btn-sm" type="submit">Apply Price</button>
+                    </div>
+                    
+                    <!-- Sorting -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Sort By</label>
+                        <select class="form-select rounded-0" name="sort" onchange="this.form.submit()">
+                            <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>Newest</option>
+                            <option value="price_asc" {% if filters.sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_desc" {% if filters.sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="rating" {% if filters.sort == 'rating' %}selected{% endif %}>Highest Rating</option>
+                        </select>
+                    </div>
+                    
+                    <a href="{{ url_for('shop') }}" class="btn btn-outline-danger w-100 btn-sm rounded-0">Clear Filters</a>
+                </form>
+            </div>
+            
+            {% if session.get('last_size') %}
+                <div class="card border-0 bg-light p-3 mt-4 rounded-0 text-center">
+                    <p class="mb-1 text-muted small"><i class="fa-solid fa-microchip text-accent me-1"></i>Your Predicted Size</p>
+                    <h4 class="mb-2 text-accent">{{ session['last_size'] }}</h4>
+                    <a href="{{ url_for('shop') }}?size={{ session['last_size'] }}" class="btn btn-luxury btn-sm py-1.5 fs-7">Filter My Size</a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Products Grid -->
+        <div class="col-lg-9 col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <p class="text-muted mb-0">Showing <strong>{{ products|length }}</strong> garments</p>
+                <div class="d-flex align-items-center">
+                    <!-- If user has predicted size show recommendation banner -->
+                    {% if session.get('last_size') %}
+                        <span class="badge bg-gold text-white p-2 rounded-0 fs-7 d-none d-md-inline-block"><i class="fa-solid fa-brain me-1"></i> AI Recommended Size: <strong>{{ session['last_size'] }}</strong></span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                {% for product in products %}
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="product-card">
+                            <div class="product-image-wrapper">
+                                <img src="{{ url_for('static', filename='images/' + (product.image if product.image else 'placeholder.jpg')) }}" 
+                                     class="product-image" 
+                                     alt="{{ product.name }}"
+                                     onerror="this.src='https://via.placeholder.com/400x500.png?text={{ product.name|urlencode }}'">
+                            </div>
+                            <div class="product-details">
+                                <div class="product-category">{{ product.category }}</div>
+                                <a href="{{ url_for('product_details', id=product.id) }}" class="product-title">{{ product.name }}</a>
+                                
+                                <div class="product-rating">
+                                    <div class="stars-outer">
+                                        <div class="stars-inner" style="width: {{ (product.avg_rating or 4.5) * 20 }}%"></div>
+                                    </div>
+                                    <span class="text-muted small ms-1">({{ "%.1f"|format(product.avg_rating or 4.5) }})</span>
+                                </div>
+                                
+                                <div class="product-price">₹{{ "%.2f"|format(product.price) }}</div>
+                                <div class="small text-muted mt-1">Sizes: <strong>{{ product.sizes }}</strong></div>
+                                
+                                <div class="row mt-3 g-2">
+                                    <div class="col-6">
+                                        <a href="{{ url_for('product_details', id=product.id) }}" class="btn btn-luxury-outline btn-sm w-100">Details</a>
+                                    </div>
+                                    <div class="col-6">
+                                        <form action="{{ url_for('add_to_cart') }}" method="POST">
+                                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                                            <!-- Select first size as default, or user's predicted size if available in product sizes -->
+                                            <input type="hidden" name="size" value="{% if session.get('last_size') and session.get('last_size') in product.sizes.split(',') %}{{ session['last_size'] }}{% else %}{{ product.sizes.split(',')[0] }}{% endif %}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="btn btn-luxury btn-sm w-100" {% if product.stock <= 0 %}disabled{% endif %}>
+                                                {% if product.stock <= 0 %}Out of Stock{% else %}<i class="fa-solid fa-cart-shopping"></i> Add{% endif %}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12 text-center py-5">
+                        <i class="fa-solid fa-box-open text-muted mb-3" style="font-size: 4rem;"></i>
+                        <h3>No Garments Found</h3>
+                        <p class="text-muted">Try adjusting your filter options or search queries.</p>
+                        <a href="{{ url_for('shop') }}" class="btn btn-luxury mt-3">Reset Filters</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

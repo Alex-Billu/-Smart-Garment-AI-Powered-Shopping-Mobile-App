@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="row g-5">
+        <!-- Product Images Column -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-0">
+                <img src="{{ url_for('static', filename='images/' + (product.image if product.image else 'placeholder.jpg')) }}" 
+                     class="img-fluid rounded-0 w-100" 
+                     alt="{{ product.name }}"
+                     style="max-height: 600px; object-fit: cover;"
+                     onerror="this.src='https://via.placeholder.com/600x750.png?text={{ product.name|urlencode }}'">
+            </div>
+        </div>
+        
+        <!-- Product Details Column -->
+        <div class="col-md-6">
+            <div class="ps-md-3">
+                <span class="text-uppercase text-accent fw-bold letter-spacing-1 small">{{ product.category }}</span>
+                <h1 class="brand-font my-2">{{ product.name }}</h1>
+                
+                <!-- Ratings -->
+                <div class="d-flex align-items-center mb-4">
+                    <div class="product-rating mb-0 me-2">
+                        <div class="stars-outer">
+                            <div class="stars-inner" style="width: {{ avg_rating * 20 }}%"></div>
+                        </div>
+                    </div>
+                    <span class="text-muted small">({{ "%.1f"|format(avg_rating) }} / 5.0 based on {{ reviews|length }} reviews)</span>
+                </div>
+                
+                <!-- Price -->
+                <div class="fs-3 fw-bold mb-4">₹{{ "%.2f"|format(product.price) }}</div>
+                
+                <!-- Description -->
+                <p class="text-muted mb-4">{{ product.description }}</p>
+                
+                <hr class="my-4">
+                
+                <!-- Sizing Finder and Selector -->
+                <form action="{{ url_for('add_to_cart') }}" method="POST" id="add-to-cart-form">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="size" id="selected-size" value="" required>
+                    
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <label class="form-label fw-bold mb-0">Select Size</label>
+                            
+                            <!-- AI Size Finder Link -->
+                            <a href="{{ url_for('size_finder') }}" class="text-accent fw-bold small text-decoration-none">
+                                <i class="fa-solid fa-calculator me-1"></i> AI Size Finder
+                            </a>
+                        </div>
+                        
+                        <!-- Available Sizes Buttons -->
+                        <div class="d-flex gap-2 flex-wrap">
+                            {% set avail_sizes = product.sizes.split(',') %}
+                            {% for sz in ['S', 'M', 'L', 'XL', 'XXL'] %}
+                                {% if sz in avail_sizes %}
+                                    <!-- Highlight if matches user's predicted size -->
+                                    {% if session.get('last_size') == sz %}
+                                        <button type="button" class="btn btn-outline-dark size-select-btn rounded-0 py-2 px-3 position-relative" data-size="{{ sz }}" style="min-width: 50px;">
+                                            {{ sz }}
+                                            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-gold border border-light rounded-circle" title="AI Suggested Size"></span>
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="btn btn-outline-dark size-select-btn rounded-0 py-2 px-3" data-size="{{ sz }}" style="min-width: 50px;">{{ sz }}</button>
+                                    {% endif %}
+                                {% else %}
+                                    <button type="button" class="btn btn-outline-secondary rounded-0 py-2 px-3 text-muted border-dashed" disabled style="min-width: 50px; opacity: 0.4;" title="Out of stock in this size">{{ sz }}</button>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        {% if session.get('last_size') %}
+                            <div class="mt-3 text-muted small">
+                                <i class="fa-solid fa-brain text-accent me-1"></i> Our AI model recommends size <strong>{{ session['last_size'] }}</strong> for you.
+                            </div>
+                        {% else %}
+                            <div class="mt-3 text-muted small bg-light p-2 border-start border-gold">
+                                <i class="fa-solid fa-circle-info text-accent me-1"></i> Not sure about your size? <a href="{{ url_for('size_finder') }}" class="text-dark fw-bold text-decoration-underline">Click here</a> to get an AI size prediction.
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Quantity and Add/Buy buttons -->
+                    <div class="row g-3 align-items-end mb-4">
+                        <div class="col-sm-4 col-4">
+                            <label for="quantity" class="form-label fw-bold small">Quantity</label>
+                            <input type="number" class="form-control rounded-0 py-2" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" required>
+                        </div>
+                        <div class="col-sm-8 col-8">
+                            <button type="submit" class="btn btn-luxury w-100 py-2.5" id="add-btn" {% if product.stock <= 0 %}disabled{% endif %}>
+                                {% if product.stock <= 0 %}Out of Stock{% else %}<i class="fa-solid fa-bag-shopping me-2"></i> Add to Cart{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="small text-muted mb-2"><i class="fa-solid fa-box me-1"></i> Stock availability: <strong>{{ product.stock }} items in warehouse</strong></div>
+                        <div class="small text-muted"><i class="fa-solid fa-rotate-left me-1"></i> Returns: <strong>Free 15-day return and exchanges</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reviews Section -->
+    <div class="row mt-5 pt-4 border-top">
+        <div class="col-lg-8">
+            <h3 class="brand-font mb-4">Customer Reviews</h3>
+            
+            {% if reviews %}
+                <div class="mb-5">
+                    {% for review in reviews %}
+                        <div class="card border-0 bg-light p-4 mb-3 rounded-0">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-0 fw-bold">{{ review.user_name }}</h6>
+                                    <span class="text-muted small">{{ review.created_at.strftime('%Y-%m-%d') if review.created_at else '' }}</span>
+                                </div>
+                                <div class="product-rating">
+                                    <div class="stars-outer">
+                                        <div class="stars-inner" style="width: {{ review.rating * 20 }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="mb-0 text-muted small mt-2">{{ review.review }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-4 bg-light text-muted mb-5">
+                    <p class="mb-0">No reviews yet for this product. Be the first to purchase and review!</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Add Review Form (Only show if purchased) -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4 rounded-0" style="border-top: 3px solid var(--accent-color) !important;">
+                <h4 class="mb-3"><i class="fa-solid fa-pen-to-square me-2 text-accent"></i>Write a Review</h4>
+                
+                {% if session.get('user_id') %}
+                    {% if can_review %}
+                        <form action="{{ url_for('submit_review', id=product.id) }}" method="POST">
+                            <div class="mb-3">
+                                <label class="form-label d-block fw-semibold">Your Rating</label>
+                                <div class="star-rating-input">
+                                    <input type="radio" id="star5" name="rating" value="5" required /><label for="star5" title="5 stars"><i class="fa-solid fa-star"></i></label>
+                                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars"><i class="fa-solid fa-star"></i></label>
+                                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars"><i class="fa-solid fa-star"></i></label>
+                                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars"><i class="fa-solid fa-star"></i></label>
+                                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star"><i class="fa-solid fa-star"></i></label>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="review" class="form-label fw-semibold">Your Review</label>
+                                <textarea class="form-control rounded-0" id="review" name="review" rows="4" required placeholder="Write your review here..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-luxury w-100 rounded-0">Submit Review</button>
+                        </form>
+                    {% else %}
+                        <p class="text-muted small">You can only write reviews for garments you have actually purchased.</p>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted small">Please <a href="{{ url_for('login') }}" class="text-dark fw-bold">Sign In</a> to write a review.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Frontend form verification to ensure a size is selected
+    document.getElementById('add-to-cart-form').addEventListener('submit', function(e) {
+        var selectedSize = document.getElementById('selected-size').value;
+        if (!selectedSize) {
+            e.preventDefault();
+            alert('Please select a garment size first!');
+        }
+    });
+</script>
+{% endblock %}

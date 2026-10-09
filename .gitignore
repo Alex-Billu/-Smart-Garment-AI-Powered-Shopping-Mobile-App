@@ -1,0 +1,25 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*service-account*.json
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Python environments and generated files
+venv*/
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+
+# JavaScript dependencies and Expo output
+node_modules/
+.expo/
+
+# Operating system files
+.DS_Store
+Thumbs.db

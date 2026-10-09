@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 col-sm-10">
+            <div class="card border-0 shadow-sm p-4 rounded-0 my-3" style="border-top: 3px solid var(--primary-color) !important;">
+                <div class="text-center mb-4">
+                    <h2 class="mb-1">Create Account</h2>
+                    <p class="text-muted small">Join us to find your perfect fit with AI and track your orders.</p>
+                </div>
+                
+                <form action="{{ url_for('register') }}" method="POST" onsubmit="return validateForm()">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0 rounded-0"><i class="fa-regular fa-user text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0 rounded-0" id="name" name="name" required placeholder="John Doe">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0 rounded-0"><i class="fa-regular fa-envelope text-muted"></i></span>
+                            <input type="email" class="form-control border-start-0 rounded-0" id="email" name="email" required placeholder="john.doe@example.com">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0 rounded-0"><i class="fa-solid fa-phone text-muted"></i></span>
+                            <input type="tel" class="form-control border-start-0 rounded-0" id="phone" name="phone" required placeholder="e.g. 9876543210" pattern="[0-9]{10,15}">
+                        </div>
+                        <small class="text-muted" style="font-size: 0.75rem;">Enter a valid 10-15 digit phone number without spaces or symbols.</small>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0 rounded-0"><i class="fa-solid fa-lock text-muted"></i></span>
+                                <input type="password" class="form-control border-start-0 rounded-0" id="password" name="password" required placeholder="••••••••" minlength="6">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-end-0 rounded-0"><i class="fa-solid fa-lock text-muted"></i></span>
+                                <input type="password" class="form-control border-start-0 rounded-0" id="confirm_password" name="confirm_password" required placeholder="••••••••" minlength="6">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-luxury w-100 py-2.5 rounded-0 mb-3">Register Now</button>
+                </form>
+                
+                <script>
+                    function validateForm() {
+                        var password = document.getElementById("password").value;
+                        var confirmPassword = document.getElementById("confirm_password").value;
+                        if (password !== confirmPassword) {
+                            alert("Passwords do not match!");
+                            return false;
+                        }
+                        return true;
+                    }
+                </script>
+
+                <div class="text-center mt-3">
+                    <p class="mb-0 text-muted">Already have an account? <a href="{{ url_for('login') }}" class="text-dark fw-bold">Sign In</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

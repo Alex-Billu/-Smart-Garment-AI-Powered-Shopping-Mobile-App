@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Garment - AI-Powered Fit Fashion{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section fade-in">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="hero-title">Find Your <br><span class="text-accent">Perfect Fit</span> with AI</h1>
+                <p class="hero-subtitle">Shop smarter. Measure better. Wear perfectly. Stop guessing clothing sizes and start ordering garments designed to look great on your unique body shape.</p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('shop') }}" class="btn btn-luxury">Shop Now</a>
+                    <a href="{{ url_for('size_finder') }}" class="btn btn-luxury-outline">Find My Size</a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <!-- We can place a stylish layout here -->
+                <div class="p-5 text-center">
+                    <i class="fa-solid fa-shirt text-accent" style="font-size: 15rem; opacity: 0.15;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="py-5 my-5">
+    <div class="container text-center">
+        <h2 class="mb-5">Why Choose Smart Garment?</h2>
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="feature-card">
+                    <i class="fa-solid fa-brain feature-icon"></i>
+                    <h4>AI Size Prediction</h4>
+                    <p class="text-muted small">Our machine learning models recommend sizes based on your exact body measurements.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="feature-card">
+                    <i class="fa-solid fa-gem feature-icon"></i>
+                    <h4>Premium Quality</h4>
+                    <p class="text-muted small">Every item in our storefront is handpicked, stitched, and quality tested.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="feature-card">
+                    <i class="fa-solid fa-truck-fast feature-icon"></i>
+                    <h4>Fast & Tracked Delivery</h4>
+                    <p class="text-muted small">We ship across the nation within 3-5 business days with live order status updates.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="feature-card">
+                    <i class="fa-solid fa-rotate-left feature-icon"></i>
+                    <h4>Zero-Risk Returns</h4>
+                    <p class="text-muted small">If the size doesn't fit, we offer instant, hassle-free replacement options.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-light text-center">
+    <div class="container">
+        <h2 class="mb-5">How the AI Size Finder Works</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="px-4">
+                    <div class="bg-dark text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-weight: bold; font-size: 1.5rem;">1</div>
+                    <h4>Enter Measurements</h4>
+                    <p class="text-muted">Toggle between inches and cm to enter your height, weight, chest, and waist size.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="px-4">
+                    <div class="bg-dark text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-weight: bold; font-size: 1.5rem;">2</div>
+                    <h4>Get Recommendation</h4>
+                    <p class="text-muted">Our Random Forest Classifier checks the patterns and recommends the optimal size with a confidence score.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="px-4">
+                    <div class="bg-dark text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; font-weight: bold; font-size: 1.5rem;">3</div>
+                    <h4>Shop Perfect Fits</h4>
+                    <p class="text-muted">We filter the store automatically to show products matching your recommended size!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="py-5 my-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h2>Featured Products</h2>
+                <p class="text-muted mb-0">Discover our popular new arrivals this season.</p>
+            </div>
+            <a href="{{ url_for('shop') }}" class="btn btn-luxury-outline">View All Products</a>
+        </div>
+        
+        <div class="row g-4">
+            {% for product in products %}
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="product-card">
+                        <div class="product-image-wrapper">
+                            <span class="product-badge">Hot</span>
+                            <img src="{{ url_for('static', filename='images/' + (product.image if product.image else 'placeholder.jpg')) }}" 
+                                 class="product-image" 
+                                 alt="{{ product.name }}"
+                                 onerror="this.src='https://via.placeholder.com/400x500.png?text={{ product.name|urlencode }}'">
+                        </div>
+                        <div class="product-details">
+                            <div class="product-category">{{ product.category }}</div>
+                            <a href="{{ url_for('product_details', id=product.id) }}" class="product-title">{{ product.name }}</a>
+                            <div class="product-rating">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star-half-stroke"></i>
+                                <span class="text-muted small ms-1">(4.5)</span>
+                            </div>
+                            <div class="product-price">₹{{ "%.2f"|format(product.price) }}</div>
+                            <div class="mt-3">
+                                <a href="{{ url_for('product_details', id=product.id) }}" class="btn btn-luxury-outline w-100 btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12 text-center text-muted py-4">
+                    <p>No featured products available at this time. Please run setup to seed catalog.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <i class="fa-solid fa-compress text-accent" style="font-size: 10rem; opacity: 0.1;"></i>
+            </div>
+            <div class="col-md-6">
+                <h2 class="mb-4">About Smart Garment</h2>
+                <p>Welcome to Smart Garment, where state-of-the-art technology meets high-end fashion design. Founded in 2026, we noticed a major problem in online shopping: sizing inconsistency between brands. Over 30% of online garment orders are returned due to poor fitting, which leads to high shipping emissions and customer dissatisfaction.</p>
+                <p>Our solution is an AI-powered shopping engine. By building a custom Random Forest Classifier trained on hundreds of body measurements and fit preferences, we provide customized sizing predictions that guarantee a perfect look and feel.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5 my-5">
+    <div class="container text-center">
+        <h2 class="mb-5">What Our Customers Say</h2>
+        <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <p class="lead italic">"I was skeptical about the size recommendation system at first. I entered 172cm height and 68kg weight. The AI suggested size 'M'. The denim jacket fits me like a glove! Ordering online has never been this stress-free."</p>
+                            <h5 class="mt-3 font-weight-bold mb-0">Rohan Sharma</h5>
+                            <span class="text-muted small">Verified Buyer</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <p class="lead italic">"The imperial converter is super handy. I input my measurements in inches and lbs, and the system correctly recommended size 'L' for my dress. The fit is loose and breezy, exactly how I wanted it."</p>
+                            <h5 class="mt-3 font-weight-bold mb-0">Priya Patel</h5>
+                            <span class="text-muted small">Verified Buyer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev text-dark" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next text-dark" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon bg-dark rounded-circle" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm p-4">
+                    <h2 class="text-center mb-4">Contact Support</h2>
+                    <form action="#" method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="contact_name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control rounded-0" id="contact_name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contact_email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control rounded-0" id="contact_email" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="contact_subject" class="form-label">Subject</label>
+                                <input type="text" class="form-control rounded-0" id="contact_subject" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="contact_message" class="form-label">Message</label>
+                                <textarea class="form-control rounded-0" id="contact_message" rows="4" required></textarea>
+                            </div>
+                            <div class="col-12 text-center mt-4">
+                                <button type="button" class="btn btn-luxury" onclick="alert('Thank you for contacting us. We will get back to you shortly!')">Send Message</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

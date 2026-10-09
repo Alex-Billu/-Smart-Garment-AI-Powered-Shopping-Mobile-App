@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <h1 class="brand-font mb-4"><i class="fa-solid fa-bag-shopping text-accent me-2"></i>Shopping Cart</h1>
+    
+    {% if cart_items %}
+        <div class="row g-4">
+            <!-- Cart Items List -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm p-4 rounded-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle cart-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Product</th>
+                                    <th scope="col" class="text-center">Size</th>
+                                    <th scope="col" class="text-center">Quantity</th>
+                                    <th scope="col" class="text-end">Price</th>
+                                    <th scope="col" class="text-end">Total</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart_items %}
+                                    <tr>
+                                        <!-- Product Image & Name -->
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="{{ url_for('static', filename='images/' + (item.image if item.image else 'placeholder.jpg')) }}" 
+                                                     class="cart-item-img me-3" 
+                                                     alt="{{ item.name }}"
+                                                     onerror="this.src='https://via.placeholder.com/150x200.png?text={{ item.name|urlencode }}'">
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold"><a href="{{ url_for('product_details', id=item.product_id) }}" class="text-dark text-decoration-none">{{ item.name }}</a></h6>
+                                                    <span class="text-muted small text-uppercase">{{ item.category }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <!-- Size Selection & AI suggestion -->
+                                        <td class="text-center">
+                                            <span class="fw-bold fs-5">{{ item.size }}</span>
+                                            
+                                            {% if session.get('last_size') %}
+                                                {% if item.size != session['last_size'] %}
+                                                    {% if session['last_size'] in item.available_sizes.split(',') %}
+                                                        <form action="{{ url_for('update_cart_item_size') }}" method="POST" class="mt-1">
+                                                            <input type="hidden" name="cart_item_id" value="{{ item.cart_id }}">
+                                                            <input type="hidden" name="size" value="{{ session['last_size'] }}">
+                                                            <button type="submit" class="btn btn-gold py-1 px-2 rounded-0 fs-8" title="Switch to your AI recommended size"><i class="fa-solid fa-brain me-1"></i>Apply {{ session['last_size'] }}</button>
+                                                        </form>
+                                                    {% else %}
+                                                        <span class="d-block text-danger small mt-1 fs-8">AI Size {{ session['last_size'] }} unavailable</span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="d-block text-success small mt-1 fs-8 fw-semibold"><i class="fa-solid fa-check me-1"></i>Perfect Fit Size</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                        
+                                        <!-- Quantity Form -->
+                                        <td class="text-center">
+                                            <div class="d-inline-flex border">
+                                                <form action="{{ url_for('update_cart_quantity') }}" method="POST" class="d-inline">
+                                                    <input type="hidden" name="cart_item_id" value="{{ item.cart_id }}">
+                                                    <input type="hidden" name="quantity" value="{{ item.quantity - 1 }}">
+                                                    <button type="submit" class="btn btn-sm btn-light rounded-0 px-2 py-1" {% if item.quantity <= 1 %}disabled{% endif %}>-</button>
+                                                </form>
+                                                
+                                                <span class="px-3 py-1 align-self-center">{{ item.quantity }}</span>
+                                                
+                                                <form action="{{ url_for('update_cart_quantity') }}" method="POST" class="d-inline">
+                                                    <input type="hidden" name="cart_item_id" value="{{ item.cart_id }}">
+                                                    <input type="hidden" name="quantity" value="{{ item.quantity + 1 }}">
+                                                    <button type="submit" class="btn btn-sm btn-light rounded-0 px-2 py-1" {% if item.quantity >= item.stock %}disabled{% endif %}>+</button>
+                                                </form>
+                                            </div>
+                                            <small class="d-block text-muted mt-1 fs-8">Max: {{ item.stock }}</small>
+                                        </td>
+                                        
+                                        <!-- Price -->
+                                        <td class="text-end fw-semibold">₹{{ "%.2f"|format(item.price) }}</td>
+                                        
+                                        <!-- Total -->
+                                        <td class="text-end fw-bold">₹{{ "%.2f"|format(item.price * item.quantity) }}</td>
+                                        
+                                        <!-- Remove button -->
+                                        <td class="text-center">
+                                            <form action="{{ url_for('remove_from_cart') }}" method="POST">
+                                                <input type="hidden" name="cart_item_id" value="{{ item.cart_id }}">
+                                                <button type="submit" class="btn btn-link text-danger p-0" title="Remove Item"><i class="fa-regular fa-trash-can fs-5"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Order Summary Sidebar -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm p-4 rounded-0" style="border-top: 3px solid var(--accent-color) !important;">
+                    <h4 class="mb-4">Order Summary</h4>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Subtotal</span>
+                        <span class="fw-bold">₹{{ "%.2f"|format(cart_total) }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Delivery Charges</span>
+                        <span class="text-success fw-bold">FREE</span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fw-bold fs-5 text-dark">Total Amount</span>
+                        <span class="fw-bold fs-5 text-dark">₹{{ "%.2f"|format(cart_total) }}</span>
+                    </div>
+                    
+                    {% if session.get('last_size') %}
+                        <div class="alert alert-info rounded-0 border-0 mb-4 py-2 px-3 fs-8 text-dark">
+                            <i class="fa-solid fa-brain me-1 text-accent"></i> We have saved your predicted size <strong>{{ session['last_size'] }}</strong> to help you select products.
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('checkout') }}" class="btn btn-luxury py-2.5">Proceed to Checkout</a>
+                        <a href="{{ url_for('shop') }}" class="btn btn-luxury-outline py-2.5">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm p-5 rounded-0 text-center">
+            <div class="py-5">
+                <i class="fa-solid fa-cart-shopping text-muted mb-4" style="font-size: 5rem; opacity: 0.5;"></i>
+                <h3>Your shopping cart is empty</h3>
+                <p class="text-muted mb-4">You haven't added any garments to your bag yet.</p>
+                <a href="{{ url_for('shop') }}" class="btn btn-luxury">Shop Collection</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

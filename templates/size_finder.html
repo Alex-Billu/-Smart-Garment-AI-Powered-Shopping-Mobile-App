@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}AI Size Finder - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="size-finder-container">
+                <div class="text-center mb-5">
+                    <h1 class="brand-font">AI Size Finder</h1>
+                    <p class="text-muted">Enter your physical measurements and preferences below. Our machine learning Random Forest model will calculate your recommended size.</p>
+                    
+                    <!-- Unit Preference Toggle -->
+                    <div class="unit-selector mt-4">
+                        <button type="button" class="unit-btn active" id="btn-metric">Metric (cm/kg)</button>
+                        <button type="button" class="unit-btn" id="btn-imperial">Imperial (in/lbs)</button>
+                    </div>
+                </div>
+
+                <form action="{{ url_for('size_finder') }}" method="POST" id="size-finder-form">
+                    <!-- Hidden field to pass selected unit preference -->
+                    <input type="hidden" name="unit_preference" id="unit_preference" value="metric">
+                    
+                    <div class="row g-4">
+                        <!-- Height Input -->
+                        <div class="col-md-6">
+                            <label for="height" class="form-label fw-semibold">Height (<span id="height-unit">cm</span>)</label>
+                            <input type="number" step="any" min="100" class="form-control rounded-0" id="height" name="height" required placeholder="e.g. 175.5" value="{{ last_pred.height if last_pred else '' }}">
+                            <span class="measurement-instruction" id="height-help">Minimum 100 cm. Enter your height standing flat against a wall.</span>
+                        </div>
+                        
+                        <!-- Weight Input -->
+                        <div class="col-md-6">
+                            <label for="weight" class="form-label fw-semibold">Weight (<span id="weight-unit">kg</span>)</label>
+                            <input type="number" step="any" min="20" class="form-control rounded-0" id="weight" name="weight" required placeholder="e.g. 70.2" value="{{ last_pred.weight if last_pred else '' }}">
+                            <span class="measurement-instruction" id="weight-help">Minimum 20 kg. Enter your body weight in kilograms.</span>
+                        </div>
+                        
+                        <!-- Chest Circumference Input -->
+                        <div class="col-md-6">
+                            <label for="chest" class="form-label fw-semibold">Chest Circumference (<span id="chest-unit">cm</span>)</label>
+                            <input type="number" step="any" min="20" class="form-control rounded-0" id="chest" name="chest" required placeholder="e.g. 96.5" value="{{ last_pred.chest if last_pred else '' }}">
+                            <span class="measurement-instruction" id="chest-help">Minimum 20. Wrap a tape measure around the fullest part of your chest.</span>
+                        </div>
+                        
+                        <!-- Waist Circumference Input -->
+                        <div class="col-md-6">
+                            <label for="waist" class="form-label fw-semibold">Waist Circumference (<span id="waist-unit">cm</span>)</label>
+                            <input type="number" step="any" min="20" class="form-control rounded-0" id="waist" name="waist" required placeholder="e.g. 84.0" value="{{ last_pred.waist if last_pred else '' }}">
+                            <span class="measurement-instruction" id="waist-help">Minimum 20. Wrap the tape measure around your natural waistline.</span>
+                        </div>
+                        
+                        <!-- Fit Preference -->
+                        <div class="col-md-12">
+                            <label for="fit_preference" class="form-label fw-semibold">Fit Preference</label>
+                            <select class="form-select rounded-0" id="fit_preference" name="fit_preference" required>
+                                <option value="Regular Fit" {% if last_pred and last_pred.fit_preference == 'Regular Fit' %}selected{% endif %}>Regular Fit (Comfortable standard fit)</option>
+                                <option value="Slim Fit" {% if last_pred and last_pred.fit_preference == 'Slim Fit' %}selected{% endif %}>Slim Fit (Contoured closer to the body)</option>
+                                <option value="Loose Fit" {% if last_pred and last_pred.fit_preference == 'Loose Fit' %}selected{% endif %}>Loose Fit (Breezy oversized fit)</option>
+                            </select>
+                            <span class="measurement-instruction">Choose how you prefer garments to sit on your body.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-5">
+                        <div class="col-md-6 d-grid mb-3 mb-md-0">
+                            <button type="submit" class="btn btn-luxury py-2.5"><i class="fa-solid fa-microchip me-2"></i>Calculate My Size</button>
+                        </div>
+                        <div class="col-md-6 d-grid">
+                            <button type="reset" class="btn btn-luxury-outline py-2.5"><i class="fa-solid fa-rotate me-2"></i>Reset</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Measuring Tips card -->
+            <div class="card border-0 bg-light rounded-0 p-4 mt-5">
+                <h4 class="mb-3"><i class="fa-solid fa-ruler me-2 text-accent"></i>Tips for Precise Measurement</h4>
+                <ul class="mb-0 text-muted small ps-3">
+                    <li class="mb-2"><strong>Use a flexible tape measure:</strong> Wrap it snugly (but not tightly) around your body without squeezing.</li>
+                    <li class="mb-2"><strong>Measure bare skin or light clothing:</strong> Bulky shirts or pants will skew size results.</li>
+                    <li class="mb-2"><strong>Ask a friend to help:</strong> Height and chest are much easier to measure when standing naturally while someone else takes the coordinates.</li>
+                    <li><strong>Metric vs Imperial:</strong> Our models convert all data to a single unified scale internally, so feel free to choose whichever scale you prefer.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

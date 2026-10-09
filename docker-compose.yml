@@ -1,0 +1,87 @@
+version: '3.9'
+
+services:
+  # ─── MySQL Database ───────────────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: smart_garment_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-smart_garment_db}
+      MYSQL_USER: ${MYSQL_USER:-sguser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-sgpassword}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./migrations:/docker-entrypoint-initdb.d/migrations
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - smart_garment_net
+
+  # ─── Flask Backend ────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart_garment_backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:-smart_garment_db}
+      DB_USER: ${MYSQL_USER:-sguser}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-sgpassword}
+      SECRET_KEY: ${SECRET_KEY:-change-this-in-production-secret-key}
+      JWT_SECRET: ${JWT_SECRET:-change-this-jwt-secret}
+      FLASK_ENV: production
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./static/images:/app/static/images
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - smart_garment_net
+
+  # ─── Nginx Reverse Proxy ──────────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: smart_garment_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./static:/var/www/static:ro
+    depends_on:
+      - backend
+    networks:
+      - smart_garment_net
+
+volumes:
+  db_data:
+    name: smart_garment_db_data
+
+networks:
+  smart_garment_net:
+    name: smart_garment_network
+    driver: bridge

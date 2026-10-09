@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <h1 class="brand-font mb-4"><i class="fa-solid fa-credit-card text-accent me-2"></i>Checkout</h1>
+    
+    <div class="row g-4">
+        <!-- Shipping Address Form -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm p-4 rounded-0" style="border-top: 3px solid var(--primary-color) !important;">
+                <h4 class="mb-4">Shipping Information</h4>
+                
+                <form action="{{ url_for('place_order') }}" method="POST" id="checkout-form">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control rounded-0" id="name" name="name" required value="{{ user.name if user else '' }}" placeholder="Enter full name">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control rounded-0" id="email" name="email" required value="{{ user.email if user else '' }}" placeholder="name@example.com">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control rounded-0" id="phone" name="phone" required value="{{ user.phone if user else '' }}" placeholder="10-digit number" pattern="[0-9]{10,15}">
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="address" class="form-label">Street Address</label>
+                            <textarea class="form-control rounded-0" id="address" name="address" rows="3" required placeholder="Apartment, suite, unit, street name, etc."></textarea>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control rounded-0" id="city" name="city" required placeholder="City">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" class="form-control rounded-0" id="state" name="state" required placeholder="State">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="pincode" class="form-label">Pincode</label>
+                            <input type="text" class="form-control rounded-0" id="pincode" name="pincode" required placeholder="6-digit pincode" pattern="[0-9]{6}">
+                        </div>
+                    </div>
+                    
+                    <h4 class="mb-4 mt-5">Payment Method</h4>
+                    <div class="card p-3 rounded-0 bg-light border-0 mb-4">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="payment_method" id="cod" value="Cash on Delivery" checked>
+                            <label class="form-check-label fw-bold text-dark" for="cod">
+                                <i class="fa-solid fa-money-bill-wave text-success me-2"></i> Cash on Delivery (COD)
+                            </label>
+                            <small class="d-block text-muted mt-1">Pay with cash when your garments are safely delivered to your doorstep.</small>
+                        </div>
+                        <hr>
+                        <div class="form-check opacity-50">
+                            <input class="form-check-input" type="radio" name="payment_method" id="online" value="Online Payment" disabled>
+                            <label class="form-check-label fw-bold text-muted" for="online">
+                                <i class="fa-solid fa-credit-card text-muted me-2"></i> Credit / Debit Card or UPI (Temporarily Unavailable)
+                            </label>
+                            <small class="d-block text-muted mt-1">Online payment gateway integrations are offline for maintenance.</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-luxury py-2.5"><i class="fa-solid fa-circle-check me-2"></i>Place Order (COD)</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Summary Sidebar -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm p-4 rounded-0" style="border-top: 3px solid var(--accent-color) !important;">
+                <h4 class="mb-4">Order Summary</h4>
+                
+                <div class="table-responsive mb-4">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr class="small text-muted text-uppercase">
+                                <th>Item</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                                <tr>
+                                    <td>
+                                        <div class="small fw-bold">{{ item.name }}</div>
+                                        <span class="badge bg-dark rounded-0 fs-8">{{ item.size }}</span>
+                                    </td>
+                                    <td class="text-center small">{{ item.quantity }}</td>
+                                    <td class="text-end fw-semibold small">₹{{ "%.2f"|format(item.price * item.quantity) }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Subtotal</span>
+                    <span class="fw-bold">₹{{ "%.2f"|format(cart_total) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Delivery Charges</span>
+                    <span class="text-success fw-bold">FREE</span>
+                </div>
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between">
+                    <span class="fw-bold text-dark fs-5">Grand Total</span>
+                    <span class="fw-bold text-dark fs-5">₹{{ "%.2f"|format(cart_total) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

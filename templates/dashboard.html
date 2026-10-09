@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h1 class="brand-font">Welcome back, {{ session.get('user_name') }}!</h1>
+            <p class="text-muted mb-0">Manage your body profile, trace your orders, and shop for your perfect fits.</p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <a href="{{ url_for('size_finder') }}" class="btn btn-gold me-2"><i class="fa-solid fa-calculator me-2"></i>AI Size Finder</a>
+            <a href="{{ url_for('shop') }}" class="btn btn-luxury"><i class="fa-solid fa-bag-shopping me-2"></i>Shop Catalog</a>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <!-- AI Size Prediction Profile -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm p-4 h-100 rounded-0" style="border-top: 3px solid var(--accent-color) !important;">
+                <h3 class="mb-4"><i class="fa-solid fa-microchip text-accent me-2"></i>AI Size Profile</h3>
+                
+                {% if last_prediction %}
+                    <div class="text-center py-4 bg-light mb-4">
+                        <span class="text-uppercase text-muted d-block font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">Recommended Size</span>
+                        <div class="predicted-size-display my-2">{{ last_prediction.predicted_size }}</div>
+                        <p class="mb-0 text-muted">Confidence Score: <strong>{{ "%.1f"|format(last_prediction.confidence) }}%</strong></p>
+                    </div>
+                    
+                    <h5 class="mb-3 border-bottom pb-2">Measurement Summary</h5>
+                    <div class="row text-center mb-4">
+                        <div class="col-3">
+                            <span class="d-block text-muted small">Height</span>
+                            <span class="fw-bold">{{ last_prediction.height }} cm</span>
+                        </div>
+                        <div class="col-3">
+                            <span class="d-block text-muted small">Weight</span>
+                            <span class="fw-bold">{{ last_prediction.weight }} kg</span>
+                        </div>
+                        <div class="col-3">
+                            <span class="d-block text-muted small">Chest</span>
+                            <span class="fw-bold">{{ last_prediction.chest }} cm</span>
+                        </div>
+                        <div class="col-3">
+                            <span class="d-block text-muted small">Waist</span>
+                            <span class="fw-bold">{{ last_prediction.waist }} cm</span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <span class="text-muted small d-block">Fit Preference:</span>
+                            <span class="fw-bold">{{ last_prediction.fit_preference }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted small d-block">BMI (Body Mass Index):</span>
+                            <span class="fw-bold">{{ "%.1f"|format(last_prediction.bmi) }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <a href="{{ url_for('prediction_result') }}" class="btn btn-luxury-outline rounded-0 btn-sm"><i class="fa-solid fa-circle-info me-2"></i>View Full Result Analysis</a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fa-solid fa-ruler-combined text-muted mb-3" style="font-size: 3.5rem;"></i>
+                        <h5>No AI Size Profile Yet</h5>
+                        <p class="text-muted small px-4">You haven't calculated your size using our AI model yet. Enter your measurements now to get recommended product sizes.</p>
+                        <a href="{{ url_for('size_finder') }}" class="btn btn-luxury-outline rounded-0 btn-sm">Find My Size Now</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Recent Orders Summary -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm p-4 h-100 rounded-0" style="border-top: 3px solid var(--primary-color) !important;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0"><i class="fa-solid fa-receipt me-2"></i>Recent Orders</h3>
+                    <a href="{{ url_for('orders') }}" class="btn btn-link btn-sm text-dark p-0">View All</a>
+                </div>
+                
+                {% if recent_orders %}
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                    <tr>
+                                        <td>#{{ order.id }}</td>
+                                        <td class="small text-muted">{{ order.created_at.strftime('%Y-%m-%d') if order.created_at else '' }}</td>
+                                        <td class="fw-bold">₹{{ "%.2f"|format(order.total_amount) }}</td>
+                                        <td>
+                                            {% if order.status == 'Pending' %}
+                                                <span class="badge bg-warning text-dark rounded-0">Pending</span>
+                                            {% elif order.status == 'Confirmed' %}
+                                                <span class="badge bg-info text-dark rounded-0">Confirmed</span>
+                                            {% elif order.status == 'Shipped' %}
+                                                <span class="badge bg-primary rounded-0">Shipped</span>
+                                            {% elif order.status == 'Delivered' %}
+                                                <span class="badge bg-success rounded-0">Delivered</span>
+                                            {% else %}
+                                                <span class="badge bg-danger rounded-0">Cancelled</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-luxury-outline btn-sm rounded-0" style="font-size: 0.75rem; padding: 4px 8px;">View</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5 my-auto">
+                        <i class="fa-solid fa-box-open text-muted mb-3" style="font-size: 3.5rem;"></i>
+                        <h5>No Orders Placed Yet</h5>
+                        <p class="text-muted small px-4">Your order list is empty. Browse our catalog and use your AI recommended size to make your first purchase.</p>
+                        <a href="{{ url_for('shop') }}" class="btn btn-luxury-outline rounded-0 btn-sm">Shop Catalog</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

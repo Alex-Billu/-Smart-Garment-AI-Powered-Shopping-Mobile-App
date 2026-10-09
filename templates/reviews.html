@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}My Reviews - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <h1 class="brand-font mb-4"><i class="fa-regular fa-comments text-accent me-2"></i>My Reviews</h1>
+    
+    {% if reviews %}
+        <div class="row g-3">
+            {% for review in reviews %}
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm p-4 rounded-0" style="border-left: 3px solid var(--accent-color) !important;">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="fw-bold mb-0">Reviewed: <a href="{{ url_for('product_details', id=review.product_id) }}" class="text-dark text-decoration-none">{{ review.product_name }}</a></h5>
+                                <span class="text-muted small">Submitted on: {{ review.created_at.strftime('%Y-%m-%d') if review.created_at else '' }}</span>
+                            </div>
+                            <div class="product-rating">
+                                <div class="stars-outer">
+                                    <div class="stars-inner" style="width: {{ review.rating * 20 }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0 mt-3">{{ review.review }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm p-5 rounded-0 text-center">
+            <div class="py-5">
+                <i class="fa-regular fa-message text-muted mb-4" style="font-size: 5rem; opacity: 0.5;"></i>
+                <h3>No reviews written yet</h3>
+                <p class="text-muted mb-4">You haven't reviewed any purchased garments yet. Go to your orders to review delivered products.</p>
+                <a href="{{ url_for('orders') }}" class="btn btn-luxury">Go to My Orders</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

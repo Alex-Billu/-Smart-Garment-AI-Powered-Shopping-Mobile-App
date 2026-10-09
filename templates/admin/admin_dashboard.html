@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h1 class="brand-font mb-0"><i class="fa-solid fa-gauge-high text-accent me-2"></i>Admin Dashboard</h1>
+        <div class="text-muted small">Logged in as: <strong>{{ session.get('admin_email') }}</strong></div>
+    </div>
+    
+    <!-- Stats Cards Grid -->
+    <div class="row g-4 mb-5">
+        <!-- Total Revenue -->
+        <div class="col-md-4 col-sm-6">
+            <div class="card admin-card p-4 h-100 border-start border-success border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold d-block">Total Revenue</span>
+                        <h2 class="mb-0 fw-bold mt-1">₹{{ "%.2f"|format(stats.total_revenue) }}</h2>
+                    </div>
+                    <i class="fa-solid fa-indian-rupee-sign admin-stat-icon text-success"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Total Orders -->
+        <div class="col-md-2 col-sm-6">
+            <div class="card admin-card p-4 h-100 border-start border-primary border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold d-block">Total Orders</span>
+                        <h2 class="mb-0 fw-bold mt-1">{{ stats.total_orders }}</h2>
+                    </div>
+                    <i class="fa-solid fa-receipt admin-stat-icon text-primary"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Total Products -->
+        <div class="col-md-2 col-sm-6">
+            <div class="card admin-card p-4 h-100 border-start border-warning border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold d-block">Products</span>
+                        <h2 class="mb-0 fw-bold mt-1">{{ stats.total_products }}</h2>
+                    </div>
+                    <i class="fa-solid fa-shirt admin-stat-icon text-warning"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Total Users -->
+        <div class="col-md-2 col-sm-6">
+            <div class="card admin-card p-4 h-100 border-start border-info border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold d-block">Customers</span>
+                        <h2 class="mb-0 fw-bold mt-1">{{ stats.total_users }}</h2>
+                    </div>
+                    <i class="fa-solid fa-users admin-stat-icon text-info"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Reviews -->
+        <div class="col-md-2 col-sm-6">
+            <div class="card admin-card p-4 h-100 border-start border-danger border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold d-block">Reviews</span>
+                        <h2 class="mb-0 fw-bold mt-1">{{ stats.total_reviews }}</h2>
+                    </div>
+                    <i class="fa-regular fa-comments admin-stat-icon text-danger"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charts Section -->
+    <div class="row g-4 mb-5">
+        <!-- Sales and Orders Line Chart -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm p-4 rounded-0 h-100">
+                <h5 class="fw-bold mb-4"><i class="fa-solid fa-chart-line text-accent me-2"></i>Sales & Orders Performance</h5>
+                <div>
+                    <canvas id="salesChart" 
+                            data-labels='{{ chart_data.sales_labels|tojson }}' 
+                            data-sales='{{ chart_data.sales_values|tojson }}' 
+                            data-orders='{{ chart_data.order_values|tojson }}' 
+                            style="max-height: 350px;"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Category split chart -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm p-4 rounded-0 h-100">
+                <h5 class="fw-bold mb-4"><i class="fa-solid fa-chart-pie text-accent me-2"></i>Category Breakdown</h5>
+                <div class="d-flex justify-content-center align-items-center" style="height: 280px;">
+                    <canvas id="categoryChart" 
+                            data-labels='{{ chart_data.cat_labels|tojson }}' 
+                            data-counts='{{ chart_data.cat_values|tojson }}' 
+                            style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Shortcuts Panel -->
+    <div class="card border-0 shadow-sm p-4 rounded-0">
+        <h5 class="fw-bold mb-4"><i class="fa-solid fa-screwdriver-wrench text-accent me-2"></i>Quick Management Shortcuts</h5>
+        <div class="row g-3">
+            <div class="col-md-3 d-grid">
+                <a href="{{ url_for('admin_products') }}" class="btn btn-luxury-outline rounded-0"><i class="fa-solid fa-tags me-2"></i>Manage Products</a>
+            </div>
+            <div class="col-md-3 d-grid">
+                <a href="{{ url_for('admin_orders') }}" class="btn btn-luxury-outline rounded-0"><i class="fa-solid fa-truck me-2"></i>Manage Orders</a>
+            </div>
+            <div class="col-md-3 d-grid">
+                <a href="{{ url_for('admin_users') }}" class="btn btn-luxury-outline rounded-0"><i class="fa-solid fa-users me-2"></i>Manage Users</a>
+            </div>
+            <div class="col-md-3 d-grid">
+                <a href="{{ url_for('admin_reviews') }}" class="btn btn-luxury-outline rounded-0"><i class="fa-regular fa-comments me-2"></i>Manage Reviews</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

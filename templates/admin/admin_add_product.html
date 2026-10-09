@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Add Product - Smart Garment Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h1 class="brand-font mb-0"><i class="fa-solid fa-plus text-accent me-2"></i>Add New Product</h1>
+        <a href="{{ url_for('admin_products') }}" class="btn btn-luxury-outline btn-sm rounded-0"><i class="fa-solid fa-arrow-left me-1"></i> Back to Catalog</a>
+    </div>
+    
+    <div class="card border-0 shadow-sm p-4 rounded-0" style="border-top: 3px solid var(--accent-color) !important;">
+        <form action="{{ url_for('admin_add_product') }}" method="POST" enctype="multipart/form-data">
+            <div class="row g-3">
+                <!-- Name -->
+                <div class="col-md-6">
+                    <label for="name" class="form-label fw-semibold">Product Name</label>
+                    <input type="text" class="form-control rounded-0" id="name" name="name" required placeholder="e.g. Classic Cotton Tee">
+                </div>
+                
+                <!-- Category -->
+                <div class="col-md-6">
+                    <label for="category" class="form-label fw-semibold">Category</label>
+                    <select class="form-select rounded-0" id="category" name="category" required>
+                        <option value="" disabled selected>Select Category</option>
+                        <option value="Men's Wear">Men's Wear</option>
+                        <option value="Women's Wear">Women's Wear</option>
+                        <option value="Inner Wear">Inner Wear</option>
+                        <option value="Night Wear">Night Wear</option>
+                        <option value="T-Shirts">T-Shirts</option>
+                        <option value="Shirts">Shirts</option>
+                        <option value="Pants">Pants</option>
+                        <option value="Dresses">Dresses</option>
+                    </select>
+                </div>
+                
+                <!-- Price -->
+                <div class="col-md-6">
+                    <label for="price" class="form-label fw-semibold">Price (₹)</label>
+                    <input type="number" step="any" min="0" class="form-control rounded-0" id="price" name="price" required placeholder="e.g. 599.00">
+                </div>
+                
+                <!-- Stock -->
+                <div class="col-md-6">
+                    <label for="stock" class="form-label fw-semibold">Initial Warehouse Stock</label>
+                    <input type="number" min="0" class="form-control rounded-0" id="stock" name="stock" required placeholder="e.g. 50">
+                </div>
+                
+                <!-- Size checkboxes -->
+                <div class="col-md-12">
+                    <label class="form-label fw-semibold d-block">Available Sizes</label>
+                    <div class="d-flex gap-4">
+                        {% for sz in ['S', 'M', 'L', 'XL', 'XXL'] %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="sizes" value="{{ sz }}" id="size_{{ sz }}" checked>
+                                <label class="form-check-label fw-bold text-dark" for="size_{{ sz }}">
+                                    {{ sz }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <div class="col-md-12">
+                    <label for="description" class="form-label fw-semibold">Product Description</label>
+                    <textarea class="form-control rounded-0" id="description" name="description" rows="4" required placeholder="Write details about fabric, stitching quality, sizing parameters..."></textarea>
+                </div>
+                
+                <!-- Image upload -->
+                <div class="col-md-12 mb-4">
+                    <label for="image" class="form-label fw-semibold">Product Image File</label>
+                    <input class="form-control rounded-0" type="file" id="image" name="image" accept="image/*">
+                    <small class="text-muted">Upload a high-quality JPEG or PNG product photograph.</small>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-luxury w-100 py-2.5">Upload Product</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

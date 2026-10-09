@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Order Successful - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-5 fade-in">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8 text-center">
+            <div class="card border-0 shadow-sm p-5 rounded-0" style="border-top: 4px solid var(--accent-color) !important;">
+                <div class="mb-4">
+                    <i class="fa-solid fa-circle-check text-success" style="font-size: 5rem;"></i>
+                </div>
+                <h1 class="brand-font mb-2">Thank You for Your Order!</h1>
+                <p class="text-muted">Your order has been received and is currently being processed by our warehouse staff.</p>
+                
+                <hr class="my-4">
+                
+                <div class="bg-light p-4 text-start rounded-0 mb-4">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Order Information</h5>
+                    <div class="row g-2 small mb-1">
+                        <div class="col-5 text-muted">Order ID:</div>
+                        <div class="col-7 fw-bold">#{{ order.id }}</div>
+                    </div>
+                    <div class="row g-2 small mb-1">
+                        <div class="col-5 text-muted">Order Date:</div>
+                        <div class="col-7">{{ order.created_at.strftime('%Y-%m-%d %H:%M') if order.created_at else '' }}</div>
+                    </div>
+                    <div class="row g-2 small mb-1">
+                        <div class="col-5 text-muted">Grand Total:</div>
+                        <div class="col-7 fw-bold text-dark">₹{{ "%.2f"|format(order.total_amount) }}</div>
+                    </div>
+                    <div class="row g-2 small mb-1">
+                        <div class="col-5 text-muted">Payment Method:</div>
+                        <div class="col-7">{{ order.payment_method }}</div>
+                    </div>
+                    <div class="row g-2 small mb-1">
+                        <div class="col-5 text-muted">Order Status:</div>
+                        <div class="col-7"><span class="badge bg-warning text-dark rounded-0">{{ order.status }}</span></div>
+                    </div>
+                    
+                    <h6 class="fw-bold mb-2 mt-3 border-bottom pb-1">Delivery Address</h6>
+                    <p class="mb-0 text-muted small">
+                        <strong>{{ order.name }}</strong><br>
+                        {{ order.address }},<br>
+                        {{ order.city }}, {{ order.state }} - {{ order.pincode }}<br>
+                        Phone: {{ order.phone }}
+                    </p>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('order_details', id=order.id) }}" class="btn btn-luxury py-2.5">Track My Order</a>
+                    <a href="{{ url_for('shop') }}" class="btn btn-luxury-outline py-2.5">Shop New Garments</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

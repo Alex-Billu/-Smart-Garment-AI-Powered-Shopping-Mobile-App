@@ -1,0 +1,491 @@
+/* Import Premium Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+/* Color Variables */
+:root {
+    --primary-color: #111111;
+    --primary-light: #222222;
+    --accent-color: #bfa37a; /* Luxury Gold */
+    --accent-hover: #a38960;
+    --bg-light: #f8f9fa;
+    --bg-dark: #121212;
+    --text-muted: #6c757d;
+    --border-color: #e9ecef;
+    --transition-speed: 0.3s;
+}
+
+/* Base Reset & Typography */
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--primary-color);
+    background-color: #ffffff;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .brand-font {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseAccent {
+    0% { box-shadow: 0 0 0 0 rgba(191, 163, 122, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(191, 163, 122, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(191, 163, 122, 0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease forwards;
+}
+
+/* Custom Buttons */
+.btn-luxury {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: 1px solid var(--primary-color);
+    padding: 10px 24px;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    transition: all var(--transition-speed) ease;
+    border-radius: 0;
+}
+
+.btn-luxury:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #ffffff;
+}
+
+.btn-luxury-outline {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 10px 24px;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    transition: all var(--transition-speed) ease;
+    border-radius: 0;
+}
+
+.btn-luxury-outline:hover {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.btn-gold {
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border: 1px solid var(--accent-color);
+    padding: 10px 24px;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    transition: all var(--transition-speed) ease;
+    border-radius: 0;
+}
+
+.btn-gold:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+}
+
+/* Navbar Customization */
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    padding: 15px 0;
+    transition: all var(--transition-speed) ease;
+}
+
+.navbar-brand {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.6rem;
+    letter-spacing: 1px;
+    color: var(--primary-color) !important;
+}
+
+.navbar-brand span {
+    color: var(--accent-color);
+}
+
+.nav-link {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--primary-color) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 10px;
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 10px;
+    right: 10px;
+    height: 2px;
+    background-color: var(--accent-color);
+    transform: scaleX(0);
+    transition: transform var(--transition-speed) ease;
+}
+
+.nav-link:hover::after, .nav-link.active::after {
+    transform: scaleX(1);
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, rgba(248, 249, 250, 0.95) 0%, rgba(233, 236, 239, 0.95) 100%), 
+                url('/static/images/hero-bg.jpg') no-repeat center center/cover;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero-title {
+    font-size: 4rem;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    font-weight: 300;
+    letter-spacing: 1px;
+    margin-bottom: 30px;
+}
+
+/* Feature Cards */
+.feature-card {
+    border: none;
+    border-radius: 0;
+    padding: 35px 25px;
+    background-color: var(--bg-light);
+    transition: all var(--transition-speed) ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    background-color: #ffffff;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+}
+
+/* Product Cards */
+.product-card {
+    border: none;
+    border-radius: 0;
+    background-color: #ffffff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+    transition: all var(--transition-speed) ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    transform: translateY(-5px);
+}
+
+.product-image-wrapper {
+    position: relative;
+    padding-top: 125%; /* 4:5 Aspect Ratio for Fashion */
+    overflow: hidden;
+    background-color: #f3f3f3;
+}
+
+.product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.08);
+}
+
+.product-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: var(--accent-color);
+    color: #ffffff;
+    padding: 5px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    z-index: 10;
+}
+
+.product-details {
+    padding: 20px 15px;
+    text-align: center;
+}
+
+.product-category {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.product-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+    text-decoration: none;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-title:hover {
+    color: var(--accent-color);
+}
+
+.product-rating {
+    color: #f8c146;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+}
+
+.product-price {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+}
+
+/* AI Size Finder Container */
+.size-finder-container {
+    background-color: #ffffff;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.05);
+    padding: 50px;
+    border-top: 4px solid var(--accent-color);
+}
+
+.measurement-instruction {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+    display: block;
+}
+
+.unit-selector {
+    background-color: var(--bg-light);
+    border-radius: 30px;
+    padding: 5px;
+    display: inline-flex;
+    margin-bottom: 25px;
+}
+
+.unit-btn {
+    border: none;
+    background: transparent;
+    padding: 8px 24px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 25px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all var(--transition-speed) ease;
+}
+
+.unit-btn.active {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+/* Size Prediction Result Screen */
+.result-card {
+    background: #ffffff;
+    border-radius: 0;
+    border: 1px solid var(--border-color);
+    padding: 40px;
+}
+
+.predicted-size-display {
+    font-size: 6rem;
+    font-weight: 800;
+    color: var(--accent-color);
+    line-height: 1;
+    margin-bottom: 10px;
+    font-family: 'Inter', sans-serif;
+    animation: pulseAccent 2s infinite;
+    display: inline-block;
+    padding: 10px 30px;
+    border: 2px solid var(--accent-color);
+}
+
+/* BMI Indicator */
+.bmi-bar-container {
+    height: 10px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    position: relative;
+    margin: 25px 0 10px 0;
+}
+
+.bmi-marker {
+    width: 14px;
+    height: 14px;
+    background-color: var(--primary-color);
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    position: absolute;
+    top: -2px;
+    transform: translateX(-50%);
+}
+
+.bmi-labels span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Size Comparison Chart Highlights */
+.size-table tr.active-size {
+    background-color: rgba(191, 163, 122, 0.15);
+    font-weight: bold;
+    border-left: 4px solid var(--accent-color);
+}
+
+/* Cart & Checkout Styling */
+.cart-table th {
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.cart-item-img {
+    width: 80px;
+    height: 100px;
+    object-fit: cover;
+    background-color: #f3f3f3;
+}
+
+/* Admin Dashboard Styling */
+.admin-card {
+    border: none;
+    border-radius: 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    background-color: #ffffff;
+    transition: transform var(--transition-speed);
+}
+
+.admin-card:hover {
+    transform: translateY(-3px);
+}
+
+.admin-stat-icon {
+    font-size: 2.2rem;
+    color: var(--accent-color);
+}
+
+/* Footer Section */
+footer {
+    background-color: var(--bg-dark);
+    color: #a0a0a0;
+    font-size: 0.9rem;
+    padding: 80px 0 30px 0;
+}
+
+footer h5 {
+    color: #ffffff;
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+footer a {
+    color: #a0a0a0;
+    text-decoration: none;
+    transition: color var(--transition-speed);
+    display: block;
+    margin-bottom: 12px;
+}
+
+footer a:hover {
+    color: var(--accent-color);
+}
+
+.footer-socials a {
+    display: inline-block;
+    margin-right: 15px;
+    font-size: 1.2rem;
+}
+
+/* Reviews and Ratings */
+.stars-outer {
+    display: inline-block;
+    position: relative;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+}
+.stars-outer::before {
+    content: "\f005 \f005 \f005 \f005 \f005";
+    color: #e9ecef;
+}
+.stars-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+}
+.stars-inner::before {
+    content: "\f005 \f005 \f005 \f005 \f005";
+    color: #f8c146;
+}
+
+.star-rating-input {
+    direction: rtl;
+    display: inline-flex;
+}
+.star-rating-input input[type=radio] {
+    display: none;
+}
+.star-rating-input label {
+    font-size: 2rem;
+    color: #e9ecef;
+    cursor: pointer;
+    padding: 0 5px;
+    transition: color 0.2s ease;
+}
+.star-rating-input label:hover,
+.star-rating-input label:hover ~ label,
+.star-rating-input input[type=radio]:checked ~ label {
+    color: #f8c146;
+}

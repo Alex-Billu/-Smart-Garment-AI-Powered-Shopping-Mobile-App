@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Product - Smart Garment Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h1 class="brand-font mb-0"><i class="fa-solid fa-pen-to-square text-accent me-2"></i>Edit Product #{{ product.id }}</h1>
+        <a href="{{ url_for('admin_products') }}" class="btn btn-luxury-outline btn-sm rounded-0"><i class="fa-solid fa-arrow-left me-1"></i> Back to Catalog</a>
+    </div>
+    
+    <div class="card border-0 shadow-sm p-4 rounded-0" style="border-top: 3px solid var(--accent-color) !important;">
+        <form action="{{ url_for('admin_edit_product', id=product.id) }}" method="POST" enctype="multipart/form-data">
+            <div class="row g-3">
+                <!-- Name -->
+                <div class="col-md-6">
+                    <label for="name" class="form-label fw-semibold">Product Name</label>
+                    <input type="text" class="form-control rounded-0" id="name" name="name" required value="{{ product.name }}">
+                </div>
+                
+                <!-- Category -->
+                <div class="col-md-6">
+                    <label for="category" class="form-label fw-semibold">Category</label>
+                    <select class="form-select rounded-0" id="category" name="category" required>
+                        {% for cat in ['Men\'s Wear', 'Women\'s Wear', 'Inner Wear', 'Night Wear', 'T-Shirts', 'Shirts', 'Pants', 'Dresses'] %}
+                            <option value="{{ cat }}" {% if product.category == cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Price -->
+                <div class="col-md-6">
+                    <label for="price" class="form-label fw-semibold">Price (₹)</label>
+                    <input type="number" step="any" min="0" class="form-control rounded-0" id="price" name="price" required value="{{ product.price }}">
+                </div>
+                
+                <!-- Stock -->
+                <div class="col-md-6">
+                    <label for="stock" class="form-label fw-semibold">Warehouse Stock</label>
+                    <input type="number" min="0" class="form-control rounded-0" id="stock" name="stock" required value="{{ product.stock }}">
+                </div>
+                
+                <!-- Size checkboxes -->
+                <div class="col-md-12">
+                    <label class="form-label fw-semibold d-block">Available Sizes</label>
+                    <div class="d-flex gap-4">
+                        {% set active_sizes = product.sizes.split(',') %}
+                        {% for sz in ['S', 'M', 'L', 'XL', 'XXL'] %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="sizes" value="{{ sz }}" id="size_{{ sz }}" {% if sz in active_sizes %}checked{% endif %}>
+                                <label class="form-check-label fw-bold text-dark" for="size_{{ sz }}">
+                                    {{ sz }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <div class="col-md-12">
+                    <label for="description" class="form-label fw-semibold">Product Description</label>
+                    <textarea class="form-control rounded-0" id="description" name="description" rows="4" required>{{ product.description }}</textarea>
+                </div>
+                
+                <!-- Image upload & current preview -->
+                <div class="col-md-12 mb-4">
+                    <label for="image" class="form-label fw-semibold">Replace Product Image</label>
+                    <div class="d-flex align-items-start mb-2">
+                        <img src="{{ url_for('static', filename='images/' + (product.image if product.image else 'placeholder.jpg')) }}" 
+                             alt="Current Image"
+                             style="width: 100px; height: 125px; object-fit: cover;"
+                             class="me-3 border"
+                             onerror="this.src='https://via.placeholder.com/100x120.png?text=Placeholder'">
+                        <div>
+                            <input class="form-control rounded-0" type="file" id="image" name="image" accept="image/*">
+                            <small class="text-muted d-block mt-1">Leave blank to keep the current photograph. Selecting a new file will overwrite it.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-luxury w-100 py-2.5">Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

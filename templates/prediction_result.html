@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}AI Size Prediction Result - Smart Garment{% endblock %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <div class="result-card text-center shadow-sm">
+                <span class="text-uppercase text-muted fw-bold small letter-spacing-1 d-block mb-3">AI Size Recommendation Engine</span>
+                
+                <h1 class="brand-font">Your Recommended Size</h1>
+                <div class="predicted-size-display my-4">{{ prediction.predicted_size }}</div>
+                
+                <div class="row justify-content-center g-4 mt-3">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="border-end border-md-0 border-light py-2">
+                            <span class="text-muted small d-block">Confidence Score</span>
+                            <h4 class="mb-0 fw-bold text-success">{{ "%.1f"|format(prediction.confidence) }}%</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="border-end border-md-0 border-light py-2">
+                            <span class="text-muted small d-block">Body Mass Index (BMI)</span>
+                            <h4 class="mb-0 fw-bold">{{ "%.1f"|format(prediction.bmi) }} <span class="fs-6 fw-normal text-muted">({{ bmi_category }})</span></h4>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-4">
+                        <div class="py-2">
+                            <span class="text-muted small d-block">Fit Preference</span>
+                            <h4 class="mb-0 fw-bold">{{ prediction.fit_preference }}</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BMI Visual Gauge -->
+                <div class="row justify-content-center mt-5">
+                    <div class="col-lg-8">
+                        <h6 class="text-start small fw-bold text-muted mb-0">BMI Distribution Scale</h6>
+                        <div class="bmi-bar-container">
+                            <!-- Calculate left offset percentage for BMI marker: BMI ranges roughly from 15 to 35 -->
+                            {% set bmi_percent = ((prediction.bmi - 15) / 20 * 100) %}
+                            {% set bmi_percent = 0 if bmi_percent < 0 else (100 if bmi_percent > 100 else bmi_percent) %}
+                            <div class="bmi-marker" style="left: {{ bmi_percent }}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between bmi-labels">
+                            <span class="small text-start">Underweight<br>&lt; 18.5</span>
+                            <span class="small text-center">Normal<br>18.5 - 24.9</span>
+                            <span class="small text-center">Overweight<br>25.0 - 29.9</span>
+                            <span class="small text-end">Obese<br>&ge; 30.0</span>
+                        </div>
+                        <p class="text-muted small mt-4 italic"><i class="fa-solid fa-circle-info text-accent"></i> Note: BMI is displayed for informational purposes only and does not constitute medical advice or diagnosis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-5">
+        <!-- Size Chart Table Column -->
+        <div class="col-md-6">
+            <h3 class="brand-font mb-4"><i class="fa-solid fa-table-list text-accent me-2"></i>Garment Size Chart</h3>
+            <p class="text-muted small">Compare your measurements below with our standard garment sizing chart. The row highlighted indicates your predicted size category.</p>
+            
+            <div class="table-responsive">
+                <table class="table table-bordered size-table align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Size</th>
+                            <th>Chest Circumference</th>
+                            <th>Waist Circumference</th>
+                            <th>Height Reference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="{% if prediction.predicted_size == 'S' %}active-size{% endif %}">
+                            <td><strong>S</strong></td>
+                            <td>84 - 89 cm (33 - 35 in)</td>
+                            <td>70 - 75 cm (27.5 - 29.5 in)</td>
+                            <td>160 cm (5'3" ft)</td>
+                        </tr>
+                        <tr class="{% if prediction.predicted_size == 'M' %}active-size{% endif %}">
+                            <td><strong>M</strong></td>
+                            <td>90 - 99 cm (35.5 - 39 in)</td>
+                            <td>76 - 85 cm (30 - 33.5 in)</td>
+                            <td>170 cm (5'7" ft)</td>
+                        </tr>
+                        <tr class="{% if prediction.predicted_size == 'L' %}active-size{% endif %}">
+                            <td><strong>L</strong></td>
+                            <td>100 - 109 cm (39.5 - 43 in)</td>
+                            <td>86 - 95 cm (34 - 37.5 in)</td>
+                            <td>178 cm (5'10" ft)</td>
+                        </tr>
+                        <tr class="{% if prediction.predicted_size == 'XL' %}active-size{% endif %}">
+                            <td><strong>XL</strong></td>
+                            <td>110 - 119 cm (43.5 - 47 in)</td>
+                            <td>96 - 105 cm (38 - 41.5 in)</td>
+                            <td>184 cm (6'0" ft)</td>
+                        </tr>
+                        <tr class="{% if prediction.predicted_size == 'XXL' %}active-size{% endif %}">
+                            <td><strong>XXL</strong></td>
+                            <td>120 - 129 cm (47.5 - 51 in)</td>
+                            <td>106 - 115 cm (42 - 45.5 in)</td>
+                            <td>190 cm (6'3" ft)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card border-0 bg-light p-4 rounded-0 mt-4">
+                <h5 class="fw-bold"><i class="fa-solid fa-ruler-combined text-accent me-2"></i>Measurement History</h5>
+                <ul class="mb-0 small text-muted ps-3">
+                    <li class="mb-1">Height Entered: <strong>{{ prediction.height }} cm</strong></li>
+                    <li class="mb-1">Weight Entered: <strong>{{ prediction.weight }} kg</strong></li>
+                    <li class="mb-1">Chest Entered: <strong>{{ prediction.chest }} cm</strong></li>
+                    <li class="mb-1">Waist Entered: <strong>{{ prediction.waist }} cm</strong></li>
+                    <li>Date Analyzed: <strong>{{ prediction.created_at.strftime('%Y-%m-%d %H:%M') if prediction.created_at else '' }}</strong></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Recommended Products Column -->
+        <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="brand-font mb-0"><i class="fa-solid fa-tags text-accent me-2"></i>Recommended Products</h3>
+                <a href="{{ url_for('shop') }}?size={{ prediction.predicted_size }}" class="btn btn-link btn-sm text-dark p-0">View All</a>
+            </div>
+            <p class="text-muted small">Products currently in stock matching your recommended size: <strong>{{ prediction.predicted_size }}</strong>.</p>
+            
+            <div class="row g-3">
+                {% for product in recommended_products %}
+                    <div class="col-sm-6">
+                        <div class="product-card border border-light">
+                            <div class="product-image-wrapper" style="padding-top: 100%;">
+                                <img src="{{ url_for('static', filename='images/' + (product.image if product.image else 'placeholder.jpg')) }}" 
+                                     class="product-image" 
+                                     alt="{{ product.name }}"
+                                     onerror="this.src='https://via.placeholder.com/300x300.png?text={{ product.name|urlencode }}'">
+                            </div>
+                            <div class="product-details p-3">
+                                <a href="{{ url_for('product_details', id=product.id) }}" class="product-title fw-bold fs-7">{{ product.name }}</a>
+                                <div class="product-price fs-7 my-1">₹{{ "%.2f"|format(product.price) }}</div>
+                                <div class="mt-2">
+                                    <form action="{{ url_for('add_to_cart') }}" method="POST">
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <input type="hidden" name="size" value="{{ prediction.predicted_size }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-luxury btn-sm w-100 fs-8 py-2" {% if product.stock <= 0 %}disabled{% endif %}>
+                                            {% if product.stock <= 0 %}Out of Stock{% else %}<i class="fa-solid fa-cart-plus me-1"></i> Add ({{ prediction.predicted_size }}){% endif %}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12 text-center py-5 bg-light text-muted">
+                        <p class="mb-0">No garments currently available in size {{ prediction.predicted_size }}.</p>
+                        <a href="{{ url_for('shop') }}" class="btn btn-luxury-outline btn-sm mt-3">Shop Other Sizes</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
