@@ -2,6 +2,21 @@
 
 Smart Garment is a modern fashion e-commerce application that provides a seamless shopping experience. It includes a responsive web interface, a mobile application, and an AI-powered clothing size recommendation system.
 
+## 🏗️ System Architecture
+
+The application follows a standard client-server architecture integrated with an AI micro-component:
+
+- **Client Layer**:
+  - **Web Frontend**: Built with HTML, CSS, JavaScript, and Bootstrap 5, rendered using Flask's Jinja2 templates.
+  - **Mobile Application**: A cross-platform mobile client built with React Native and Expo.
+- **Server Layer (Flask Backend)**:
+  - Manages web application routing, session-based authentication, and overall business logic.
+  - Exposes standard RESTful API endpoints (under `/api`) for the mobile application.
+- **AI Sizing Engine**:
+  - Uses a Random Forest Classifier trained with `scikit-learn` to predict clothing sizes based on physical measurements (height, weight, chest, waist).
+- **Data Layer (MySQL)**:
+  - A relational database handling structured storage for users, product catalogs, shopping carts, orders, and sizing history.
+
 ## 📁 Project Structure
 
 ```text
